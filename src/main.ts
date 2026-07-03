@@ -5,6 +5,12 @@ import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalo
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 
+// 1. Import the PWA elements loader
+import { defineCustomElements } from '@ionic/pwa-elements/loader';
+
+// 2. Call the loader before bootstrapping the application
+defineCustomElements(window);
+
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
