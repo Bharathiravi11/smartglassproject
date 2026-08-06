@@ -1,17 +1,122 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Tab 3
+      Image Description
     </ion-title>
+    <ion-button slot="end" fill="clear" (click)="showConfigDialog()">
+      <ion-icon slot="icon-only" name="settings-outline"></ion-icon>
+    </ion-button>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Tab 3</ion-title>
+      <ion-title size="large">Image Description</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <app-explore-container name="Tab 3 page"></app-explore-container>
+  <div class="content-wrapper">
+    <!-- Instructions Card -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>How to Use</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ol>
+          <li>Click settings icon to configure your free Gemini API key</li>
+          <li>Get a free API key from <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a></li>
+          <li>Select an image from your device</li>
+          <li>Click "Describe Image" to get AI-generated description</li>
+        </ol>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Image Selection Card -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Select Image</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <input 
+          type="file" 
+          id="fileInput" 
+          accept="image/*" 
+          style="display: none" 
+          (change)="onFileSelected($event)"
+        />
+        
+        <div class="button-group">
+          <ion-button expand="block" (click)="selectImage()">
+            <ion-icon slot="start" name="image-outline"></ion-icon>
+            Choose Image
+          </ion-button>
+          
+          <ion-button 
+            *ngIf="selectedImage" 
+            expand="block" 
+            color="danger" 
+            (click)="clearImage()"
+          >
+            <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+            Clear
+          </ion-button>
+        </div>
+
+        <!-- Image Preview -->
+        <div *ngIf="selectedImage" class="image-preview">
+          <img [src]="selectedImage" alt="Selected image" />
+        </div>
+
+        <!-- Describe Button -->
+        <ion-button 
+          *ngIf="selectedImage && !isLoading" 
+          expand="block" 
+          color="primary" 
+          (click)="describeImage()"
+          class="describe-button"
+        >
+          Describe Image with Gemini AI
+        </ion-button>
+
+        <!-- Loading Spinner -->
+        <div *ngIf="isLoading" class="loading-container">
+          <ion-spinner name="crescent"></ion-spinner>
+          <ion-text>
+            <p>Analyzing image with Gemini...</p>
+          </ion-text>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Description Result Card -->
+    <ion-card *ngIf="description">
+      <ion-card-header>
+        <ion-card-title>AI Description</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-text>
+          <p class="description-text">{{ description }}</p>
+        </ion-text>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- History -->
+    <ion-card *ngIf="results.length > 1">
+      <ion-card-header>
+        <ion-card-title>Previous Results</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div *ngFor="let result of results.slice(1, 4)" class="history-item">
+          <img [src]="result.imageUrl" alt="Previous image" class="history-thumbnail" />
+          <div class="history-content">
+            <ion-text color="medium">
+              <small>{{ result.timestamp | date:'short' }}</small>
+            </ion-text>
+            <p class="history-description">{{ result.description | slice:0:100 }}...</p>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>
